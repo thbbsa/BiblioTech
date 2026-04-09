@@ -31,7 +31,8 @@ public class Main {
             String senhaDigitada = leitura.nextLine();
 
             // Aqui você chama a função de login pedindo email e senha
-            Sistema.realizarLoginFunc(subTipo, emailDigitado, senhaDigitada);
+            Sistema sistema = new Sistema();
+            sistema.realizarLoginFunc(subTipo, emailDigitado, senhaDigitada);
 
         } else {
             System.out.println("Opção inválida. Reinicie o sistema.");
