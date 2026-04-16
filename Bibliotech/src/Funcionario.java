@@ -1,12 +1,18 @@
 public class Funcionario {
+    private int id;
     private String nome;
     private String email;
     private String senha;
 
-    public Funcionario(String nome, String email, String senha) {
+    public Funcionario(int id, String nome, String email, String senha) {
+        this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getNome() {
@@ -19,6 +25,16 @@ public class Funcionario {
 
     public String getSenha() {
         return this.senha;
+    }
+
+    @Override
+    public String toString() {
+        return "Funcionario{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", email='" + email + '\'' +
+                ", senha='" + senha + '\'' +
+                '}';
     }
 }
 

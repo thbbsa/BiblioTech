@@ -25,10 +25,8 @@ public class Administrador {
     }
 
     public void cadastrarFuncionario(String nome, String email, String senha) {
-        Funcionario novoFunc = new Funcionario(nome, email, senha);
-
         // manda pro sistema guardar
-        sistema.adicionarFuncionario(novoFunc);
+        sistema.criarFuncionario(nome, email, senha);
 
         System.out.println("Funcionário cadastrado com sucesso!");
     }
