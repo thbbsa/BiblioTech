@@ -11,10 +11,14 @@ public class Sistema {
         funcionarios.add(f);
     }
 
-    public Funcionario criarFuncionario(String nome, String email, String senha) {
+    public Funcionario salvaFuncionario(String nome, String email, String senha) {
         Funcionario f = new Funcionario(proximoId++, nome, email, senha);
         this.adicionarFuncionario(f);
         return f;
+    }
+
+    public boolean deletarFuncionario(int id) {
+        return this.getFuncionarios().removeIf(f -> id == f.getId());
     }
 
     public ArrayList<Funcionario> getFuncionarios() {
@@ -22,8 +26,8 @@ public class Sistema {
     }
 
     public void exibirMenuFunc(int tipoUsuario, Administrador adm) {
-
         Scanner leitura = new Scanner(System.in);
+
         boolean rodandoMenu = true;
 
         while (rodandoMenu) {
@@ -131,9 +135,11 @@ public class Sistema {
                     case 11:
                         System.out.println("Listando funcionários...");
 
-                        ArrayList<Funcionario> funcionarios = this.getFuncionarios();
+                        if (this.getFuncionarios().size() <= 0) {
+                            System.out.println("Não há funcionarios cadastrados.");
+                        }
 
-                        for (Funcionario f : funcionarios) {
+                        for (Funcionario f : this.getFuncionarios()) {
                             System.out.println(
                                     f.getId() + " - " +
                                             f.getNome() + " - " +
@@ -146,7 +152,10 @@ public class Sistema {
                         break;
 
                     case 12:
-                        System.out.println("Excluindo funcionário...");
+                        System.out.print("Digite o Id do Funcionario que deseja excluir: ");
+                        int id = leitura.nextInt();
+
+                        adm.excluirFuncionario(id);
                         break;
 
                     case 0:
