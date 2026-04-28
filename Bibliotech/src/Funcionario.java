@@ -16,24 +16,19 @@ public class Funcionario {
     }
 
     public String getNome() {
-        return this.nome;
+        return nome;
     }
 
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
     public String getSenha() {
-        return this.senha;
+        return senha;
     }
 
     @Override
     public String toString() {
-        return "Funcionario{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", email='" + email + '\'' +
-                ", senha='" + senha + '\'' +
-                '}';
+        return id + " - " + nome + " - " + email;
     }
 }
