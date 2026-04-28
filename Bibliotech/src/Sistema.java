@@ -26,6 +26,15 @@ public class Sistema {
     }
 
     // ========================
+    // GERENCIAMENTO DE Livros
+    // ========================
+
+    public void salvarLivro() {
+
+    }
+
+
+    // ========================
     // LOGIN
     // ========================
 
