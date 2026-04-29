@@ -16,7 +16,7 @@ public class Livro {
         this.editora = editora;
         this.anoPublicacao = anoPublicacao;
         this.quantidadeTotal = quantidadeTotal;
-        this.quantidadeTotal = quantidadeDisponivel;
+        this.quantidadeDisponivel = quantidadeDisponivel;
         this.genero = genero;
     }
 
