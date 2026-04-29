@@ -4,7 +4,9 @@ import java.util.Scanner;
 public class Sistema {
 
     private ArrayList<Funcionario> funcionarios = new ArrayList<>();
-    private int proximoId = 1;
+    private ArrayList<Livro> livros = new ArrayList<>();
+    private int proximoIdFuncionario = 1;
+    private int proximoIdLivro = 1;
     private Scanner leitura = new Scanner(System.in);
 
     // ========================
@@ -12,7 +14,7 @@ public class Sistema {
     // ========================
 
     public Funcionario salvaFuncionario(String nome, String email, String senha) {
-        Funcionario f = new Funcionario(proximoId++, nome, email, senha);
+        Funcionario f = new Funcionario(proximoIdFuncionario++, nome, email, senha);
         funcionarios.add(f);
         return f;
     }
@@ -26,13 +28,19 @@ public class Sistema {
     }
 
     // ========================
-    // GERENCIAMENTO DE Livros
+    // GERENCIAMENTO DE LIVROS
     // ========================
 
-    public void salvarLivro() {
-
+    public Livro salvarLivro(String titulo, String autor, String editora, int anoPublicacao, int quantidadeTotal,
+                             int quantidadeDisponivel, String genero) {
+        Livro l = new Livro(proximoIdLivro++, titulo, autor, editora, anoPublicacao, quantidadeTotal, quantidadeDisponivel, genero);
+        livros.add(l);
+        return l;
     }
 
+    public boolean deletarLivro(int id) {
+        return livros.removeIf(l -> l.getId() == id);
+    }
 
     // ========================
     // LOGIN
@@ -69,10 +77,12 @@ public class Sistema {
         boolean rodando = true;
 
         while (rodando) {
-            System.out.println("\n--- MENU FUNCIONÁRIO ---");
-            System.out.println("1. Consultar Livro");
-            System.out.println("2. Empréstimo de Livro");
-            System.out.println("3. Consultar Empréstimo");
+            System.out.println("\n=============================");
+            System.out.println("       MENU FUNCIONÁRIO      ");
+            System.out.println("=============================");
+            System.out.println("1. Consultar Livros");
+            System.out.println("2. Realizar Empréstimo");
+            System.out.println("3. Consultar Empréstimos");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
@@ -97,20 +107,21 @@ public class Sistema {
         boolean rodando = true;
 
         while (rodando) {
-            System.out.println("\n--- MENU ADMINISTRADOR ---");
+            System.out.println("\n=============================");
+            System.out.println("     MENU ADMINISTRADOR      ");
+            System.out.println("=============================");
             System.out.println("-- Livros --");
-            System.out.println("1. Consultar Livro");
-            System.out.println("2. Criar Livro");
+            System.out.println("1. Consultar Livros");
+            System.out.println("2. Cadastrar Livro");
             System.out.println("3. Editar Livro");
             System.out.println("4. Deletar Livro");
-            System.out.println("-- Estoque e Empréstimos --");
-            System.out.println("5. Consultar Estoque");
-            System.out.println("6. Empréstimo de Livro");
-            System.out.println("7. Consultar Empréstimo");
+            System.out.println("-- Empréstimos --");
+            System.out.println("5. Realizar Empréstimo");
+            System.out.println("6. Consultar Empréstimos");
             System.out.println("-- Funcionários --");
-            System.out.println("8. Cadastrar Funcionário");
-            System.out.println("9. Listar Funcionários");
-            System.out.println("10. Excluir Funcionário");
+            System.out.println("7. Cadastrar Funcionário");
+            System.out.println("8. Listar Funcionários");
+            System.out.println("9. Excluir Funcionário");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
@@ -122,12 +133,11 @@ public class Sistema {
                 case 2: criarLivro(); break;
                 case 3: editarLivro(); break;
                 case 4: deletarLivro(); break;
-                case 5: consultarEstoque(); break;
-                case 6: realizarEmprestimo(); break;
-                case 7: consultarEmprestimo(); break;
-                case 8: menuCadastrarFuncionario(adm); break;
-                case 9: listarFuncionarios(); break;
-                case 10: menuExcluirFuncionario(adm); break;
+                case 5: realizarEmprestimo(); break;
+                case 6: consultarEmprestimo(); break;
+                case 7: menuCadastrarFuncionario(adm); break;
+                case 8: listarFuncionarios(); break;
+                case 9: menuExcluirFuncionario(adm); break;
                 case 0: rodando = false; break;
                 default: System.out.println("Opção inválida.");
             }
@@ -139,6 +149,7 @@ public class Sistema {
     // ========================
 
     private void menuCadastrarFuncionario(Administrador adm) {
+        System.out.println("\n--- CADASTRAR FUNCIONÁRIO ---");
         System.out.print("Nome: ");
         String nome = leitura.nextLine();
 
@@ -167,7 +178,8 @@ public class Sistema {
     }
 
     private void menuExcluirFuncionario(Administrador adm) {
-        System.out.print("Digite o ID do funcionário que deseja excluir: ");
+        listarFuncionarios();
+        System.out.print("ID do funcionário a excluir: ");
         int id = leitura.nextInt();
         leitura.nextLine();
 
@@ -176,27 +188,148 @@ public class Sistema {
     }
 
     // ========================
-    // AÇÕES DE LIVROS (a implementar)
+    // AÇÕES DE LIVROS
     // ========================
 
     private void consultarLivro() {
-        System.out.println("Consultando livros...");
+        System.out.println("\n--- LIVROS CADASTRADOS ---");
+
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro cadastrado.");
+        } else {
+            for (Livro l : livros) {
+                System.out.println(l);
+            }
+        }
+
+        pausar();
     }
 
     private void criarLivro() {
-        System.out.println("Criando livro...");
+        System.out.println("\n--- CADASTRAR LIVRO ---");
+
+        System.out.print("Título: ");
+        String titulo = leitura.nextLine();
+
+        System.out.print("Autor: ");
+        String autor = leitura.nextLine();
+
+        System.out.print("Editora: ");
+        String editora = leitura.nextLine();
+
+        System.out.print("Ano de publicação: ");
+        int anoPublicacao = leitura.nextInt();
+        leitura.nextLine();
+
+        System.out.print("Quantidade total: ");
+        int qntTotalLivros = leitura.nextInt();
+        leitura.nextLine();
+
+        System.out.print("Quantidade disponível: ");
+        int qntDisponivelLivros = leitura.nextInt();
+        leitura.nextLine();
+
+        System.out.print("Gênero: ");
+        String genero = leitura.nextLine();
+
+        salvarLivro(titulo, autor, editora, anoPublicacao, qntTotalLivros, qntDisponivelLivros, genero);
+        System.out.println("✔ Livro cadastrado com sucesso!");
+        pausar();
     }
 
     private void editarLivro() {
-        System.out.println("Editando livro...");
+        consultarLivro();
+
+        System.out.print("ID do livro que deseja editar: ");
+        int id = leitura.nextInt();
+        leitura.nextLine();
+
+        boolean encontrado = false;
+
+        for (Livro l : livros) {
+            if (id == l.getId()) {
+                encontrado = true;
+
+                System.out.println("\n--- EDITAR LIVRO ---");
+                System.out.println("1. Título");
+                System.out.println("2. Autor");
+                System.out.println("3. Editora");
+                System.out.println("4. Ano de Publicação");
+                System.out.println("5. Quantidade Total");
+                System.out.println("6. Quantidade Disponível");
+                System.out.println("7. Gênero");
+                System.out.println("0. Cancelar");
+                System.out.print("Campo a editar: ");
+                int campoEditar = leitura.nextInt();
+                leitura.nextLine();
+
+                switch (campoEditar) {
+                    case 1:
+                        System.out.print("Novo título: ");
+                        l.setTitulo(leitura.nextLine());
+                        break;
+                    case 2:
+                        System.out.print("Novo autor: ");
+                        l.setAutor(leitura.nextLine());
+                        break;
+                    case 3:
+                        System.out.print("Nova editora: ");
+                        l.setEditora(leitura.nextLine());
+                        break;
+                    case 4:
+                        System.out.print("Novo ano de publicação: ");
+                        l.setAnoPublicacao(leitura.nextInt());
+                        leitura.nextLine();
+                        break;
+                    case 5:
+                        System.out.print("Nova quantidade total: ");
+                        l.setQuantidadeTotal(leitura.nextInt());
+                        leitura.nextLine();
+                        break;
+                    case 6:
+                        System.out.print("Nova quantidade disponível: ");
+                        l.setQuantidadeDisponivel(leitura.nextInt());
+                        leitura.nextLine();
+                        break;
+                    case 7:
+                        System.out.print("Novo gênero: ");
+                        l.setGenero(leitura.nextLine());
+                        break;
+                    case 0:
+                        System.out.println("Edição cancelada.");
+                        break;
+                    default:
+                        System.out.println("Opção inválida.");
+                }
+
+                if (campoEditar != 0) {
+                    System.out.println("✔ Livro atualizado com sucesso!");
+                }
+
+                pausar();
+            }
+        }
+
+        if (!encontrado) {
+            System.out.println("Erro: nenhum livro encontrado com esse ID.");
+            pausar();
+        }
     }
 
     private void deletarLivro() {
-        System.out.println("Deletando livro...");
-    }
+        consultarLivro();
 
-    private void consultarEstoque() {
-        System.out.println("Consultando estoque...");
+        System.out.print("ID do livro que deseja excluir: ");
+        int id = leitura.nextInt();
+        leitura.nextLine();
+
+        if (deletarLivro(id)) {
+            System.out.println("✔ Livro removido com sucesso!");
+        } else {
+            System.out.println("Erro: nenhum livro encontrado com esse ID.");
+        }
+
+        pausar();
     }
 
     private void realizarEmprestimo() {
