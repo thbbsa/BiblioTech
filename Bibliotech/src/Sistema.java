@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -5,8 +6,12 @@ public class Sistema {
 
     private ArrayList<Funcionario> funcionarios = new ArrayList<>();
     private ArrayList<Livro> livros = new ArrayList<>();
+    private ArrayList<Emprestimo> emprestimos = new ArrayList<>();
+    private ArrayList<Emprestimo> emprestimosDevolvidos = new ArrayList<>();
     private int proximoIdFuncionario = 1;
     private int proximoIdLivro = 1;
+    private int proximoEmprestimo = 1;
+    private int proximoEmprestimoDevolvido = 1;
     private Scanner leitura = new Scanner(System.in);
 
     // ========================
@@ -40,6 +45,22 @@ public class Sistema {
 
     public boolean deletarLivro(int id) {
         return livros.removeIf(l -> l.getId() == id);
+    }
+
+    // ========================
+    // GERENCIAMENTO DE EMPRÉSTIMOS
+    // ========================
+
+    public Emprestimo salvarEmprestimo(int idLivro, int idCliente, String dataEmprestada, String dataDevolvida, boolean devolvido) {
+        Emprestimo e = new Emprestimo(proximoEmprestimo++, idLivro, idCliente, dataEmprestada, dataDevolvida, devolvido);
+        emprestimos.add(e);
+        return e;
+    }
+
+    public Emprestimo salvarEmprestimoDevolvidos(int idLivro, int idCliente, String dataEmprestada, String dataDevolucao, boolean devolvido) {
+        Emprestimo eDevoldido = new Emprestimo(proximoEmprestimoDevolvido++, idLivro, idCliente, dataEmprestada, dataDevolucao, devolvido);
+        emprestimosDevolvidos.add(eDevoldido);
+        return eDevoldido;
     }
 
     // ========================
@@ -83,6 +104,8 @@ public class Sistema {
             System.out.println("1. Consultar Livros");
             System.out.println("2. Realizar Empréstimo");
             System.out.println("3. Consultar Empréstimos");
+            System.out.println("4. Registrar Devolução");
+            System.out.println("5. Consultar Devoluções");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
@@ -93,6 +116,8 @@ public class Sistema {
                 case 1: consultarLivro(); break;
                 case 2: realizarEmprestimo(); break;
                 case 3: consultarEmprestimo(); break;
+                case 4: registrarDevolucao(); break;
+                case 5: consultarDevolucoes(); break;
                 case 0: rodando = false; break;
                 default: System.out.println("Opção inválida.");
             }
@@ -118,10 +143,12 @@ public class Sistema {
             System.out.println("-- Empréstimos --");
             System.out.println("5. Realizar Empréstimo");
             System.out.println("6. Consultar Empréstimos");
+            System.out.println("7. Registrar Devolução");
+            System.out.println("8. Consultar Devoluções");
             System.out.println("-- Funcionários --");
-            System.out.println("7. Cadastrar Funcionário");
-            System.out.println("8. Listar Funcionários");
-            System.out.println("9. Excluir Funcionário");
+            System.out.println("9. Cadastrar Funcionário");
+            System.out.println("10. Listar Funcionários");
+            System.out.println("11. Excluir Funcionário");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
@@ -135,9 +162,11 @@ public class Sistema {
                 case 4: deletarLivro(); break;
                 case 5: realizarEmprestimo(); break;
                 case 6: consultarEmprestimo(); break;
-                case 7: menuCadastrarFuncionario(adm); break;
-                case 8: listarFuncionarios(); break;
-                case 9: menuExcluirFuncionario(adm); break;
+                case 7: registrarDevolucao(); break;
+                case 8: consultarDevolucoes(); break;
+                case 9: menuCadastrarFuncionario(adm); break;
+                case 10: listarFuncionarios(); break;
+                case 11: menuExcluirFuncionario(adm); break;
                 case 0: rodando = false; break;
                 default: System.out.println("Opção inválida.");
             }
@@ -332,12 +361,88 @@ public class Sistema {
         pausar();
     }
 
+    // ========================
+    // AÇÕES DE EMPRÉSTIMOS
+    // ========================
+
     private void realizarEmprestimo() {
-        System.out.println("Realizando empréstimo...");
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro cadastrado.");
+            pausar();
+        } else {
+            consultarLivro();
+
+            System.out.print("ID do livro: ");
+            int idLivro = leitura.nextInt();
+            leitura.nextLine();
+
+            System.out.print("ID do cliente: ");
+            int idCliente = leitura.nextInt();
+            leitura.nextLine();
+
+            System.out.print("Data do empréstimo (dd/mm/aaaa): ");
+            String dataEmprestada = leitura.nextLine();
+
+            System.out.print("Quantos dias de empréstimo: ");
+            int dias = leitura.nextInt();
+            leitura.nextLine();
+
+            String dataDevolucao = LocalDate.now().plusDays(dias).toString();
+
+            salvarEmprestimo(idLivro, idCliente, dataEmprestada, dataDevolucao, false);
+            System.out.println("✔ Empréstimo realizado com sucesso!");
+            pausar();
+        }
     }
 
     private void consultarEmprestimo() {
-        System.out.println("Consultando empréstimos...");
+        System.out.println("\n--- EMPRÉSTIMOS REALIZADOS ---");
+
+        if (emprestimos.isEmpty()) {
+            System.out.println("Nenhum empréstimo cadastrado.");
+        } else {
+            for (Emprestimo e : emprestimos) {
+                System.out.println(e);
+            }
+        }
+
+        pausar();
+    }
+
+    private void registrarDevolucao() {
+        if (emprestimos.isEmpty()) {
+            System.out.println("Não há emprestimos");
+        } else {
+            consultarEmprestimo();
+            System.out.print("Digite o id do emprestimo: ");
+            int idEmprestimo = leitura.nextInt();
+            leitura.nextLine();
+
+            for (Emprestimo e : emprestimos) {
+                if (idEmprestimo == e.getId()) {
+                    salvarEmprestimoDevolvidos(e.getIdLivro(), e.getIdCliente(), e.getDataEmprestimo(), e.getDataDevolucao(), true);
+                }
+            }
+            //remove da lista de emprestimos
+            emprestimos.removeIf(emprestimo -> emprestimo.getId() == idEmprestimo);
+
+            System.out.println("O status foi mudado com sucesso para devolvido.");
+            pausar();
+        }
+    }
+
+    private void consultarDevolucoes() {
+        System.out.println("\n--- EMPRÉSTIMOS Devolvidos ---");
+
+        if (emprestimosDevolvidos.isEmpty()) {
+            System.out.println("Nenhum empréstimo cadastrado.");
+        } else {
+            for (Emprestimo e : emprestimosDevolvidos) {
+                System.out.println(e);
+            }
+        }
+
+        pausar();
     }
 
     // ========================
