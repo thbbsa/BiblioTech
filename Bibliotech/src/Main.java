@@ -30,8 +30,7 @@ public class Main {
 
             switch (opcao) {
                 case 1:
-                    System.out.println("Acessando área do Cliente...");
-                    // implementar menu do cliente aqui
+                    menuCliente();
                     break;
 
                 case 2:
@@ -52,7 +51,50 @@ public class Main {
     }
 
     // ========================
-    // MENU DE LOGIN
+    // MENU CLIENTE
+    // ========================
+
+    private static void menuCliente() {
+        boolean voltar = false;
+
+        while (!voltar) {
+            System.out.println("\n--- ÁREA DO CLIENTE ---");
+            System.out.println("1. Login");
+            System.out.println("2. Cadastrar");
+            System.out.println("0. Voltar");
+            System.out.print("Escolha: ");
+
+            int opcao = leitura.nextInt();
+            leitura.nextLine();
+
+            switch (opcao) {
+                case 1:
+                    System.out.print("Email: ");
+                    String email = leitura.nextLine();
+
+                    System.out.print("Senha: ");
+                    String senha = leitura.nextLine();
+
+                    sistema.realizarLoginCliente(email, senha);
+                    pausar();
+                    break;
+
+                case 2:
+                    sistema.cadastrarCliente();
+                    break;
+
+                case 0:
+                    voltar = true;
+                    break;
+
+                default:
+                    System.out.println("Opção inválida.");
+            }
+        }
+    }
+
+    // ========================
+    // MENU DE LOGIN INTERNO
     // ========================
 
     private static void menuLogin() {

@@ -5,10 +5,12 @@ import java.util.Scanner;
 public class Sistema {
 
     private ArrayList<Funcionario> funcionarios = new ArrayList<>();
+    private ArrayList<Cliente> clientes = new ArrayList<>();
     private ArrayList<Livro> livros = new ArrayList<>();
     private ArrayList<Emprestimo> emprestimos = new ArrayList<>();
     private ArrayList<Emprestimo> emprestimosDevolvidos = new ArrayList<>();
     private int proximoIdFuncionario = 1;
+    private int proximoIdCliente = 1;
     private int proximoIdLivro = 1;
     private int proximoEmprestimo = 1;
     private int proximoEmprestimoDevolvido = 1;
@@ -30,6 +32,16 @@ public class Sistema {
 
     public ArrayList<Funcionario> getFuncionarios() {
         return funcionarios;
+    }
+
+    // ========================
+    // GERENCIAMENTO DE CLIENTES
+    // ========================
+
+    public Cliente salvarCliente(String nome, String email, String senha) {
+        Cliente c = new Cliente(proximoIdCliente++, nome, email, senha);
+        clientes.add(c);
+        return c;
     }
 
     // ========================
@@ -58,20 +70,37 @@ public class Sistema {
     }
 
     public Emprestimo salvarEmprestimoDevolvidos(int idLivro, int idCliente, String dataEmprestada, String dataDevolucao, boolean devolvido) {
-        Emprestimo eDevoldido = new Emprestimo(proximoEmprestimoDevolvido++, idLivro, idCliente, dataEmprestada, dataDevolucao, devolvido);
-        emprestimosDevolvidos.add(eDevoldido);
-        return eDevoldido;
+        Emprestimo eDevolvido = new Emprestimo(proximoEmprestimoDevolvido++, idLivro, idCliente, dataEmprestada, dataDevolucao, devolvido);
+        emprestimosDevolvidos.add(eDevolvido);
+        return eDevolvido;
     }
 
     // ========================
     // LOGIN
     // ========================
 
+    public void realizarLoginCliente(String emailDigitado, String senhaDigitada) {
+        for (Cliente c : clientes) {
+            if (c.getEmail().equals(emailDigitado) && c.getSenha().equals(senhaDigitada)) {
+                System.out.println("Cliente logado!");
+                exibirMenuCliente(c);
+                return;
+            }
+        }
+        System.out.println("Acesso negado! Email ou senha incorretos.");
+    }
+
     public void realizarLoginFunc(int tipoUsuario, String emailDigitado, String senhaDigitada) {
         switch (tipoUsuario) {
             case 1:
-                System.out.println("Funcionário logado!");
-                exibirMenuFuncionario();
+                for (Funcionario f : funcionarios) {
+                    if (f.getEmail().equals(emailDigitado) && f.getSenha().equals(senhaDigitada)) {
+                        System.out.println("Funcionário logado!");
+                        exibirMenuFuncionario();
+                        return;
+                    }
+                }
+                System.out.println("Acesso negado! Email ou senha incorretos.");
                 break;
 
             case 2:
@@ -87,6 +116,36 @@ public class Sistema {
 
             default:
                 System.out.println("Tipo de usuário inválido.");
+        }
+    }
+
+    // ========================
+    // MENU CLIENTE
+    // ========================
+
+    private void exibirMenuCliente(Cliente clienteLogado) {
+        boolean rodando = true;
+
+        while (rodando) {
+            System.out.println("\n=============================");
+            System.out.println("         MENU CLIENTE        ");
+            System.out.println("=============================");
+            System.out.println("1. Consultar Livros");
+            System.out.println("2. Realizar Empréstimo");
+            System.out.println("3. Consultar Meus Empréstimos");
+            System.out.println("0. Sair");
+            System.out.print("Escolha: ");
+
+            int opcao = leitura.nextInt();
+            leitura.nextLine();
+
+            switch (opcao) {
+                case 1: consultarLivro(); break;
+                case 2: realizarEmprestimoCliente(clienteLogado); break;
+                case 3: consultarEmprestimoCliente(clienteLogado); break;
+                case 0: rodando = false; break;
+                default: System.out.println("Opção inválida.");
+            }
         }
     }
 
@@ -149,6 +208,8 @@ public class Sistema {
             System.out.println("9. Cadastrar Funcionário");
             System.out.println("10. Listar Funcionários");
             System.out.println("11. Excluir Funcionário");
+            System.out.println("-- Clientes --");
+            System.out.println("12. Listar Clientes");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
@@ -167,10 +228,89 @@ public class Sistema {
                 case 9: menuCadastrarFuncionario(adm); break;
                 case 10: listarFuncionarios(); break;
                 case 11: menuExcluirFuncionario(adm); break;
+                case 12: listarClientes(); break;
                 case 0: rodando = false; break;
                 default: System.out.println("Opção inválida.");
             }
         }
+    }
+
+    // ========================
+    // AÇÕES DE CLIENTES
+    // ========================
+
+    public void cadastrarCliente() {
+        System.out.println("\n--- CADASTRAR CLIENTE ---");
+        System.out.print("Nome: ");
+        String nome = leitura.nextLine();
+
+        System.out.print("Email: ");
+        String email = leitura.nextLine();
+
+        System.out.print("Senha: ");
+        String senha = leitura.nextLine();
+
+        salvarCliente(nome, email, senha);
+        System.out.println("✔ Cadastro realizado com sucesso!");
+        pausar();
+    }
+
+    private void listarClientes() {
+        System.out.println("\n--- CLIENTES CADASTRADOS ---");
+
+        if (clientes.isEmpty()) {
+            System.out.println("Nenhum cliente cadastrado.");
+        } else {
+            for (Cliente c : clientes) {
+                System.out.println(c);
+            }
+        }
+
+        pausar();
+    }
+
+    private void realizarEmprestimoCliente(Cliente clienteLogado) {
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro disponível.");
+            pausar();
+            return;
+        }
+
+        consultarLivro();
+
+        System.out.print("ID do livro: ");
+        int idLivro = leitura.nextInt();
+        leitura.nextLine();
+
+        System.out.print("Quantos dias de empréstimo: ");
+        int dias = leitura.nextInt();
+        leitura.nextLine();
+
+        String dataEmprestimo = LocalDate.now().toString();
+        String dataDevolucao = LocalDate.now().plusDays(dias).toString();
+
+        salvarEmprestimo(idLivro, clienteLogado.getId(), dataEmprestimo, dataDevolucao, false);
+        System.out.println("✔ Empréstimo realizado com sucesso!");
+        pausar();
+    }
+
+    private void consultarEmprestimoCliente(Cliente clienteLogado) {
+        System.out.println("\n--- MEUS EMPRÉSTIMOS ---");
+
+        boolean encontrou = false;
+
+        for (Emprestimo e : emprestimos) {
+            if (e.getIdCliente() == clienteLogado.getId()) {
+                System.out.println(e);
+                encontrou = true;
+            }
+        }
+
+        if (!encontrou) {
+            System.out.println("Você não possui empréstimos ativos.");
+        }
+
+        pausar();
     }
 
     // ========================
@@ -369,30 +509,38 @@ public class Sistema {
         if (livros.isEmpty()) {
             System.out.println("Nenhum livro cadastrado.");
             pausar();
-        } else {
-            consultarLivro();
-
-            System.out.print("ID do livro: ");
-            int idLivro = leitura.nextInt();
-            leitura.nextLine();
-
-            System.out.print("ID do cliente: ");
-            int idCliente = leitura.nextInt();
-            leitura.nextLine();
-
-            System.out.print("Data do empréstimo (dd/mm/aaaa): ");
-            String dataEmprestada = leitura.nextLine();
-
-            System.out.print("Quantos dias de empréstimo: ");
-            int dias = leitura.nextInt();
-            leitura.nextLine();
-
-            String dataDevolucao = LocalDate.now().plusDays(dias).toString();
-
-            salvarEmprestimo(idLivro, idCliente, dataEmprestada, dataDevolucao, false);
-            System.out.println("✔ Empréstimo realizado com sucesso!");
-            pausar();
+            return;
         }
+
+        if (clientes.isEmpty()) {
+            System.out.println("Nenhum cliente cadastrado.");
+            pausar();
+            return;
+        }
+
+        consultarLivro();
+        listarClientes();
+
+        System.out.print("ID do livro: ");
+        int idLivro = leitura.nextInt();
+        leitura.nextLine();
+
+        System.out.print("ID do cliente: ");
+        int idCliente = leitura.nextInt();
+        leitura.nextLine();
+
+        System.out.print("Data do empréstimo (dd/mm/aaaa): ");
+        String dataEmprestada = leitura.nextLine();
+
+        System.out.print("Quantos dias de empréstimo: ");
+        int dias = leitura.nextInt();
+        leitura.nextLine();
+
+        String dataDevolucao = LocalDate.now().plusDays(dias).toString();
+
+        salvarEmprestimo(idLivro, idCliente, dataEmprestada, dataDevolucao, false);
+        System.out.println("✔ Empréstimo realizado com sucesso!");
+        pausar();
     }
 
     private void consultarEmprestimo() {
@@ -411,31 +559,32 @@ public class Sistema {
 
     private void registrarDevolucao() {
         if (emprestimos.isEmpty()) {
-            System.out.println("Não há emprestimos");
+            System.out.println("Não há empréstimos.");
+            pausar();
         } else {
             consultarEmprestimo();
-            System.out.print("Digite o id do emprestimo: ");
+            System.out.print("Digite o id do empréstimo: ");
             int idEmprestimo = leitura.nextInt();
             leitura.nextLine();
 
             for (Emprestimo e : emprestimos) {
                 if (idEmprestimo == e.getId()) {
                     salvarEmprestimoDevolvidos(e.getIdLivro(), e.getIdCliente(), e.getDataEmprestimo(), e.getDataDevolucao(), true);
+                    break;
                 }
             }
-            //remove da lista de emprestimos
-            emprestimos.removeIf(emprestimo -> emprestimo.getId() == idEmprestimo);
 
-            System.out.println("O status foi mudado com sucesso para devolvido.");
+            emprestimos.removeIf(e -> e.getId() == idEmprestimo);
+            System.out.println("✔ Devolução registrada com sucesso!");
             pausar();
         }
     }
 
     private void consultarDevolucoes() {
-        System.out.println("\n--- EMPRÉSTIMOS Devolvidos ---");
+        System.out.println("\n--- EMPRÉSTIMOS DEVOLVIDOS ---");
 
         if (emprestimosDevolvidos.isEmpty()) {
-            System.out.println("Nenhum empréstimo cadastrado.");
+            System.out.println("Nenhuma devolução registrada.");
         } else {
             for (Emprestimo e : emprestimosDevolvidos) {
                 System.out.println(e);
