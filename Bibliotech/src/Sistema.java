@@ -9,11 +9,13 @@ public class Sistema {
     private ArrayList<Livro> livros = new ArrayList<>();
     private ArrayList<Emprestimo> emprestimos = new ArrayList<>();
     private ArrayList<Emprestimo> emprestimosDevolvidos = new ArrayList<>();
+    private ArrayList<Compra> compras = new ArrayList<>();
     private int proximoIdFuncionario = 1;
     private int proximoIdCliente = 1;
     private int proximoIdLivro = 1;
     private int proximoEmprestimo = 1;
     private int proximoEmprestimoDevolvido = 1;
+    private int proximoIdCompra = 1;
     private Scanner leitura = new Scanner(System.in);
 
     // ========================
@@ -49,8 +51,8 @@ public class Sistema {
     // ========================
 
     public Livro salvarLivro(String titulo, String autor, String editora, int anoPublicacao, int quantidadeTotal,
-                             int quantidadeDisponivel, String genero) {
-        Livro l = new Livro(proximoIdLivro++, titulo, autor, editora, anoPublicacao, quantidadeTotal, quantidadeDisponivel, genero);
+                             int quantidadeDisponivel, String genero, double preco) {
+        Livro l = new Livro(proximoIdLivro++, titulo, autor, editora, anoPublicacao, quantidadeTotal, quantidadeDisponivel, genero, preco);
         livros.add(l);
         return l;
     }
@@ -73,6 +75,47 @@ public class Sistema {
         Emprestimo eDevolvido = new Emprestimo(proximoEmprestimoDevolvido++, idLivro, idCliente, dataEmprestada, dataDevolucao, devolvido);
         emprestimosDevolvidos.add(eDevolvido);
         return eDevolvido;
+    }
+
+    // ========================
+    // GERENCIAMENTO DE COMPRAS
+    // ========================
+
+    public Compra salvarCompra(int idCliente, int idLivro, int quantidade, double precoUnitario, String dataCompra, String status) {
+        Compra c = new Compra(proximoIdCompra++, idCliente, idLivro, quantidade, precoUnitario, dataCompra, status);
+        compras.add(c);
+        return c;
+    }
+
+    public ArrayList<Compra> getCompras() {
+        return compras;
+    }
+
+    public Compra encontrarCompraPorId(int id) {
+        for (Compra c : compras) {
+            if (c.getId() == id) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public boolean cancelarCompra(int id) {
+        Compra c = encontrarCompraPorId(id);
+        if (c != null && c.getStatus().equals("pendente")) {
+            c.setStatus("cancelada");
+            return true;
+        }
+        return false;
+    }
+
+    public boolean confirmarCompra(int id) {
+        Compra c = encontrarCompraPorId(id);
+        if (c != null && c.getStatus().equals("pendente")) {
+            c.setStatus("concluída");
+            return true;
+        }
+        return false;
     }
 
     // ========================
@@ -133,6 +176,8 @@ public class Sistema {
             System.out.println("1. Consultar Livros");
             System.out.println("2. Realizar Empréstimo");
             System.out.println("3. Consultar Meus Empréstimos");
+            System.out.println("4. Comprar Livro");
+            System.out.println("5. Consultar Minhas Compras");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
@@ -143,6 +188,8 @@ public class Sistema {
                 case 1: consultarLivro(); break;
                 case 2: realizarEmprestimoCliente(clienteLogado); break;
                 case 3: consultarEmprestimoCliente(clienteLogado); break;
+                case 4: realizarCompraCliente(clienteLogado); break;
+                case 5: consultarComprasCliente(clienteLogado); break;
                 case 0: rodando = false; break;
                 default: System.out.println("Opção inválida.");
             }
@@ -210,6 +257,10 @@ public class Sistema {
             System.out.println("11. Excluir Funcionário");
             System.out.println("-- Clientes --");
             System.out.println("12. Listar Clientes");
+            System.out.println("-- Compras --");
+            System.out.println("13. Listar Compras");
+            System.out.println("14. Confirmar Compra");
+            System.out.println("15. Cancelar Compra");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
@@ -229,6 +280,9 @@ public class Sistema {
                 case 10: listarFuncionarios(); break;
                 case 11: menuExcluirFuncionario(adm); break;
                 case 12: listarClientes(); break;
+                case 13: listarCompras(); break;
+                case 14: confirmarCompraPendente(); break;
+                case 15: cancelarCompraPendente(); break;
                 case 0: rodando = false; break;
                 default: System.out.println("Opção inválida.");
             }
@@ -308,6 +362,78 @@ public class Sistema {
 
         if (!encontrou) {
             System.out.println("Você não possui empréstimos ativos.");
+        }
+
+        pausar();
+    }
+
+    // ========================
+    // AÇÕES DE COMPRAS - CLIENTE
+    // ========================
+
+    private void realizarCompraCliente(Cliente clienteLogado) {
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro disponível.");
+            pausar();
+            return;
+        }
+
+        consultarLivro();
+
+        System.out.print("ID do livro que deseja comprar: ");
+        int idLivro = leitura.nextInt();
+        leitura.nextLine();
+
+        Livro livroSelecionado = null;
+        for (Livro l : livros) {
+            if (l.getId() == idLivro) {
+                livroSelecionado = l;
+                break;
+            }
+        }
+
+        if (livroSelecionado == null) {
+            System.out.println("Erro: livro não encontrado.");
+            pausar();
+            return;
+        }
+
+        if (!livroSelecionado.isDisponivel()) {
+            System.out.println("Erro: livro indisponível no estoque.");
+            pausar();
+            return;
+        }
+
+        System.out.print("Quantidade: ");
+        int quantidade = leitura.nextInt();
+        leitura.nextLine();
+
+        if (quantidade > livroSelecionado.getQuantidadeDisponivel()) {
+            System.out.println("Erro: quantidade insuficiente em estoque.");
+            pausar();
+            return;
+        }
+
+        salvarCompra(clienteLogado.getId(), idLivro, quantidade, livroSelecionado.getPreco(), LocalDate.now().toString(), "pendente");
+        System.out.println("✔ Compra realizada com sucesso!");
+        System.out.println("Subtotal: R$ " + String.format("%.2f", livroSelecionado.getPreco() * quantidade));
+        pausar();
+    }
+
+    private void consultarComprasCliente(Cliente clienteLogado) {
+        System.out.println("\n--- MINHAS COMPRAS ---");
+
+        boolean encontrou = false;
+
+        for (Compra c : compras) {
+            if (c.getIdCliente() == clienteLogado.getId()) {
+                System.out.println(c);
+                encontrou = true;
+            }
+        }
+
+        if (!encontrou) {
+            System.out.println("Você não possui compras registradas.");
         }
 
         pausar();
@@ -401,7 +527,10 @@ public class Sistema {
         System.out.print("Gênero: ");
         String genero = leitura.nextLine();
 
-        salvarLivro(titulo, autor, editora, anoPublicacao, qntTotalLivros, qntDisponivelLivros, genero);
+        System.out.print("Digite o preço do livro: ");
+        double preco = leitura.nextDouble();
+
+        salvarLivro(titulo, autor, editora, anoPublicacao, qntTotalLivros, qntDisponivelLivros, genero, preco);
         System.out.println("✔ Livro cadastrado com sucesso!");
         pausar();
     }
@@ -427,6 +556,7 @@ public class Sistema {
                 System.out.println("5. Quantidade Total");
                 System.out.println("6. Quantidade Disponível");
                 System.out.println("7. Gênero");
+                System.out.println("8. Preço");
                 System.out.println("0. Cancelar");
                 System.out.print("Campo a editar: ");
                 int campoEditar = leitura.nextInt();
@@ -463,6 +593,11 @@ public class Sistema {
                     case 7:
                         System.out.print("Novo gênero: ");
                         l.setGenero(leitura.nextLine());
+                        break;
+                    case 8:
+                        System.out.print("Novo preço: ");
+                        l.setPreco(leitura.nextDouble());
+                        leitura.nextLine();
                         break;
                     case 0:
                         System.out.println("Edição cancelada.");
@@ -589,6 +724,96 @@ public class Sistema {
             for (Emprestimo e : emprestimosDevolvidos) {
                 System.out.println(e);
             }
+        }
+
+        pausar();
+    }
+
+    // ========================
+    // AÇÕES DE COMPRAS - ADMINISTRADOR
+    // ========================
+
+    private void listarCompras() {
+        System.out.println("\n--- TODAS AS COMPRAS ---");
+
+        if (compras.isEmpty()) {
+            System.out.println("Nenhuma compra registrada.");
+        } else {
+            for (Compra c : compras) {
+                System.out.println(c);
+            }
+        }
+
+        pausar();
+    }
+
+    private void confirmarCompraPendente() {
+        System.out.println("\n--- COMPRAS PENDENTES ---");
+
+        boolean encontrou = false;
+
+        for (Compra c : compras) {
+            if (c.getStatus().equals("pendente")) {
+                System.out.println(c);
+                encontrou = true;
+            }
+        }
+
+        if (!encontrou) {
+            System.out.println("Nenhuma compra pendente.");
+            pausar();
+            return;
+        }
+
+        System.out.print("ID da compra a confirmar: ");
+        int idCompra = leitura.nextInt();
+        leitura.nextLine();
+
+        if (confirmarCompra(idCompra)) {
+            // Reduzir estoque do livro
+            Compra compraConfirmada = encontrarCompraPorId(idCompra);
+            for (Livro l : livros) {
+                if (l.getId() == compraConfirmada.getIdLivro()) {
+                    for (int i = 0; i < compraConfirmada.getQuantidade(); i++) {
+                        l.reduzirEstoque();
+                    }
+                    break;
+                }
+            }
+            System.out.println("✔ Compra confirmada com sucesso!");
+        } else {
+            System.out.println("Erro: compra não encontrada ou não está pendente.");
+        }
+
+        pausar();
+    }
+
+    private void cancelarCompraPendente() {
+        System.out.println("\n--- COMPRAS PENDENTES ---");
+
+        boolean encontrou = false;
+
+        for (Compra c : compras) {
+            if (c.getStatus().equals("pendente")) {
+                System.out.println(c);
+                encontrou = true;
+            }
+        }
+
+        if (!encontrou) {
+            System.out.println("Nenhuma compra pendente.");
+            pausar();
+            return;
+        }
+
+        System.out.print("ID da compra a cancelar: ");
+        int idCompra = leitura.nextInt();
+        leitura.nextLine();
+
+        if (cancelarCompra(idCompra)) {
+            System.out.println("✔ Compra cancelada com sucesso!");
+        } else {
+            System.out.println("Erro: compra não encontrada ou não está pendente.");
         }
 
         pausar();

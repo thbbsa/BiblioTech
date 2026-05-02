@@ -7,9 +7,10 @@ public class Livro {
     private int quantidadeTotal;
     private int quantidadeDisponivel;
     private String genero;
+    private double preco;
 
     public Livro(int id, String titulo, String autor, String editora, int anoPublicacao, int quantidadeTotal,
-    int quantidadeDisponivel, String genero) {
+                 int quantidadeDisponivel, String genero, double preco) {
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
@@ -18,6 +19,29 @@ public class Livro {
         this.quantidadeTotal = quantidadeTotal;
         this.quantidadeDisponivel = quantidadeDisponivel;
         this.genero = genero;
+        this.preco = preco;
+    }
+
+    public boolean isDisponivel() {
+        return quantidadeDisponivel > 0;
+    }
+
+    public boolean reduzirEstoque() {
+        if (quantidadeDisponivel > 0) {
+            quantidadeDisponivel--;
+            return true;
+        }
+        return false;
+    }
+
+    public void aumentarEstoque() {
+        if (quantidadeDisponivel < quantidadeTotal) {
+            quantidadeDisponivel++;
+        }
+    }
+
+    public double getPreco() {
+        return preco;
     }
 
     public int getId() {
@@ -80,10 +104,14 @@ public class Livro {
         this.genero = genero;
     }
 
+    public void setPreco(double preco) {
+        this.preco = preco;
+    }
+
     @Override
     public String toString() {
         return id + " - " + titulo + " | " + autor + " | " + editora +
                 " | " + anoPublicacao + " | Estoque: " + quantidadeDisponivel +
-                "/" + quantidadeTotal + " | " + genero;
+                "/" + quantidadeTotal + " | " + genero + " | R$ " + preco;
     }
 }
