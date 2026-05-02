@@ -1,3 +1,22 @@
+/*
+    Enzo Munarin Do Nascimento
+    Italo Trindade Oliveira
+    Thiago Barbosa De Oliveira
+
+    Projeto - BiblioTech
+
+    Descrição:
+    Classe que representa um empréstimo de livro no sistema.
+
+    Armazena informações como o id do empréstimo, id do livro,
+    id do cliente, data do empréstimo, data de devolução e o
+    status indicando se o livro foi devolvido ou não.
+
+    Possui métodos getters para acesso aos dados, um setter para
+    atualizar o status de devolução e sobrescreve o método toString()
+    para exibir as informações de forma organizada no console.
+*/
+
 public class Emprestimo {
     int id;
     int idLivro;

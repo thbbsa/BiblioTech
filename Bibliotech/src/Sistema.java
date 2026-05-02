@@ -1,3 +1,32 @@
+/*
+    Enzo Munarin Do Nascimento
+    Italo Trindade Oliveira
+    Thiago Barbosa De Oliveira
+
+    Projeto - BiblioTech
+
+    Descrição:
+    Classe responsável por toda a lógica do sistema BiblioTech.
+    Gerencia os dados e operações relacionadas a funcionários, clientes,
+    livros, empréstimos e compras.
+
+    A classe permite cadastrar, listar, editar e excluir registros,
+    além de controlar empréstimos de livros, devoluções e vendas.
+    Também realiza a autenticação de usuários (clientes, funcionários
+    e administrador) e direciona para os menus específicos de cada tipo.
+
+    Possui menus interativos no console para cada perfil de usuário,
+    permitindo executar ações como:
+    - Cadastro e consulta de livros
+    - Empréstimos e devoluções
+    - Compras de livros e controle de pedidos
+    - Gerenciamento de funcionários e clientes
+
+    Os dados são armazenados em listas (ArrayList) durante a execução
+    do programa, simulando um sistema de gerenciamento de biblioteca.
+*/
+
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;

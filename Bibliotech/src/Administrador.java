@@ -1,3 +1,23 @@
+/*
+    Enzo Munarin Do Nascimento
+    Italo Trindade Oliveira
+    Thiago Barbosa De Oliveira
+
+    Projeto - BiblioTech
+
+    Descrição:
+    Classe que representa um administrador do sistema.
+
+    Armazena informações como nome, email e senha, utilizadas
+    para autenticação e identificação do administrador.
+
+    Possui acesso ao sistema (classe Sistema), permitindo realizar
+    ações administrativas como cadastrar e excluir funcionários.
+
+    Atua como um nível de controle superior dentro do sistema,
+    sendo responsável pelo gerenciamento de usuários do tipo funcionário.
+*/
+
 public class Administrador {
     private String nome;
     private String email;

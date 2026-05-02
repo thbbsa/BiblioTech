@@ -4,7 +4,17 @@
     Thiago Barbosa De Oliveira
 
     Projeto - BiblioTech
- */
+
+    Descrição:
+    Classe principal do sistema BiblioTech responsável por iniciar a aplicação.
+    Exibe o menu inicial no console, permitindo ao usuário escolher entre
+    acessar a área de cliente, a área de funcionário/administrador ou encerrar o sistema.
+
+    Também gerencia a navegação entre os menus, realiza a leitura das entradas
+    do usuário e chama os métodos correspondentes da classe Sistema para login
+    e cadastro. Possui ainda um método utilitário para pausar a execução e
+    melhorar a interação no terminal.
+*/
 
 import java.util.Scanner;
 

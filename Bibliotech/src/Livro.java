@@ -1,3 +1,23 @@
+/*
+    Enzo Munarin Do Nascimento
+    Italo Trindade Oliveira
+    Thiago Barbosa De Oliveira
+
+    Projeto - BiblioTech
+
+    Descrição:
+    Classe que representa um livro dentro do sistema.
+
+    Armazena informações como título, autor, editora, ano de publicação,
+    gênero, preço e controle de estoque (quantidade total e disponível).
+
+    Possui métodos para verificar se o livro está disponível, reduzir e
+    aumentar o estoque, além de getters e setters para manipulação dos dados.
+
+    Também sobrescreve o método toString() para exibir os dados do livro
+    de forma organizada no console.
+*/
+
 public class Livro {
     private int id;
     private String titulo;

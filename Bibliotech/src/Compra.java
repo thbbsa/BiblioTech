@@ -1,3 +1,26 @@
+/*
+    Enzo Munarin Do Nascimento
+    Italo Trindade Oliveira
+    Thiago Barbosa De Oliveira
+
+    Projeto - BiblioTech
+
+    Descrição:
+    Classe que representa uma compra de livro no sistema.
+
+    Armazena informações como id da compra, id do cliente, id do livro,
+    quantidade adquirida, preço unitário, preço total, data da compra
+    e status da compra (pendente, concluída ou cancelada).
+
+    O preço total é calculado automaticamente com base na quantidade
+    e no preço unitário.
+
+    Possui métodos getters para acesso aos dados, setters para atualização
+    de status e quantidade, além de sobrescrever o método toString() para
+    exibir as informações de forma organizada no console.
+*/
+
+
 import java.time.LocalDate;
 
 public class Compra {

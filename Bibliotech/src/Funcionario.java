@@ -1,3 +1,21 @@
+/*
+    Enzo Munarin Do Nascimento
+    Italo Trindade Oliveira
+    Thiago Barbosa De Oliveira
+
+    Projeto - BiblioTech
+
+    Descrição:
+    Classe que representa um funcionário do sistema.
+
+    Armazena informações básicas como id, nome, email e senha,
+    utilizadas para autenticação e identificação do funcionário.
+
+    Possui métodos getters para acesso aos dados e sobrescreve
+    o método toString() para exibir as informações de forma
+    simplificada no console.
+*/
+
 public class Funcionario {
     private int id;
     private String nome;
