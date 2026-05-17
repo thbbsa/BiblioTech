@@ -1,4 +1,4 @@
-/*
+package models;/*
     Enzo Munarin Do Nascimento
     Italo Trindade Oliveira
     Thiago Barbosa De Oliveira
@@ -87,7 +87,7 @@ public class Compra {
 
     @Override
     public String toString() {
-        return "ID: " + id + " | Cliente: " + idCliente + " | Livro: " + idLivro +
+        return "ID: " + id + " | models.Cliente: " + idCliente + " | models.Livro: " + idLivro +
                 " | Quantidade: " + quantidade + " | Preço Unitário: R$ " + String.format("%.2f", precoUnitario) +
                 " | Total: R$ " + String.format("%.2f", precoTotal) + " | Data: " + dataCompra +
                 " | Status: " + status;

@@ -1,4 +1,4 @@
-/*
+package models;/*
     Enzo Munarin Do Nascimento
     Italo Trindade Oliveira
     Thiago Barbosa De Oliveira
@@ -17,16 +17,17 @@
     para exibir as informações de forma organizada no console.
 */
 
-public class Emprestimo {
-    int id;
-    int idLivro;
-    int idCliente;
-    String dataEmprestimo;
-    String dataDevolucao;
-    boolean devolvido;
 
-    Emprestimo(int id, int idLivro, int idCliente, String dataEmprestimo, String dataDevolucao,
-               boolean devolvido) {
+public class Emprestimo {
+    private int id;
+    private int idLivro;
+    private int idCliente;
+    private String dataEmprestimo;
+    private String dataDevolucao;
+    private boolean devolvido;
+
+    public Emprestimo(int id, int idLivro, int idCliente, String dataEmprestimo,
+                      String dataDevolucao, boolean devolvido) {
         this.id = id;
         this.idLivro = idLivro;
         this.idCliente = idCliente;
@@ -65,7 +66,7 @@ public class Emprestimo {
 
     @Override
     public String toString() {
-        return id + " | Livro: " + idLivro + " | Cliente: " + idCliente +
+        return "ID: " + id + " | Livro: " + idLivro + " | Cliente: " + idCliente +
                 " | Empréstimo: " + dataEmprestimo + " | Devolução: " + dataDevolucao +
                 " | Status: " + (devolvido ? "Devolvido" : "Pendente");
     }

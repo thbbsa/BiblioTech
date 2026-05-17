@@ -1,4 +1,4 @@
-/*
+package models;/*
     Enzo Munarin Do Nascimento
     Italo Trindade Oliveira
     Thiago Barbosa De Oliveira
@@ -19,16 +19,22 @@
 */
 
 public class Administrador {
+    private int id;
     private String nome;
     private String email;
     private String senha;
-    private Sistema sistema;
 
-    public Administrador(String nome, String email, String senha, Sistema sistema) {
+    // Construtor
+    public Administrador(int id, String nome, String email, String senha) {
+        this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.sistema = sistema;
+    }
+
+    // Getters
+    public int getId() {
+        return id;
     }
 
     public String getNome() {
@@ -43,18 +49,21 @@ public class Administrador {
         return senha;
     }
 
-    public void cadastrarFuncionario(String nome, String email, String senha) {
-        sistema.salvaFuncionario(nome, email, senha);
-        System.out.println("Funcionário cadastrado com sucesso!");
+    // Setters
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public void excluirFuncionario(int id) {
-        boolean removido = sistema.deletarFuncionario(id);
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-        if (removido) {
-            System.out.println("Funcionário removido com sucesso!");
-        } else {
-            System.out.println("Erro: Funcionário não encontrado.");
-        }
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + " | Nome: " + nome + " | Email: " + email;
     }
 }
