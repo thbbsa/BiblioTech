@@ -19,21 +19,26 @@ public class LivroController {
 
     // Consultar/Listar todos os livros
     public void consultarLivros() {
-        System.out.println("\n--- LIVROS CADASTRADOS ---");
-        List<Livro> livros = service.listarTodos();
+        try {
+            System.out.println("\n--- LIVROS CADASTRADOS ---");
+            List<Livro> livros = service.listarTodos();
 
-        if (livros.isEmpty()) {
-            System.out.println("Nenhum livro cadastrado.");
-        } else {
-            for (Livro l : livros) {
-                System.out.println(l);
+            if (livros.isEmpty()) {
+                System.out.println("Nenhum livro cadastrado.");
+            } else {
+                for (Livro l : livros) {
+                    System.out.println(l);
+                }
             }
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao listar livros: " + e.getMessage());
         }
     }
 
     // Listar apenas livros disponíveis
     public void consultarLivrosDisponíveis() {
-        System.out.println("\n--- LIVROS DISPONÍVEIS ---");
+        try {
+            System.out.println("\n--- LIVROS DISPONÍVEIS ---");
             List<Livro> livros = service.listarDisponíveis();
 
             if (livros.isEmpty()) {
@@ -43,12 +48,16 @@ public class LivroController {
                     System.out.println(l);
                 }
             }
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao listar livros disponíveis: " + e.getMessage());
+        }
     }
 
     // Buscar por título
     public void buscarPorTitulo() {
-        System.out.print("\nDigite o título para buscar: ");
-        String titulo = scanner.nextLine();
+        try {
+            System.out.print("\nDigite o título para buscar: ");
+            String titulo = scanner.nextLine();
 
             List<Livro> livros = service.buscarPorTitulo(titulo);
 
@@ -60,13 +69,16 @@ public class LivroController {
                     System.out.println(l);
                 }
             }
-
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao buscar livro por título: " + e.getMessage());
+        }
     }
 
     // Buscar por autor
     public void buscarPorAutor() {
-        System.out.print("\nDigite o autor para buscar: ");
-        String autor = scanner.nextLine();
+        try {
+            System.out.print("\nDigite o autor para buscar: ");
+            String autor = scanner.nextLine();
 
             List<Livro> livros = service.buscarPorAutor(autor);
 
@@ -78,13 +90,16 @@ public class LivroController {
                     System.out.println(l);
                 }
             }
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao buscar livro por autor: " + e.getMessage());
+        }
     }
 
     // Buscar por gênero
     public void buscarPorGenero() {
-        System.out.print("\nDigite o gênero para buscar: ");
-        String genero = scanner.nextLine();
-
+        try {
+            System.out.print("\nDigite o gênero para buscar: ");
+            String genero = scanner.nextLine();
 
             List<Livro> livros = service.buscarPorGenero(genero);
 
@@ -96,11 +111,15 @@ public class LivroController {
                     System.out.println(l);
                 }
             }
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao buscar livro por gênero: " + e.getMessage());
+        }
     }
 
     // Criar novo livro
     public void criarLivro() {
-        System.out.println("\n--- CADASTRAR LIVRO ---");
+        try {
+            System.out.println("\n--- CADASTRAR LIVRO ---");
 
             System.out.print("Título: ");
             String titulo = scanner.nextLine();
@@ -123,29 +142,40 @@ public class LivroController {
             System.out.print("Gênero: ");
             String genero = scanner.nextLine();
 
-            System.out.print("Preço: ");
+            System.out.print("Preço (use ponto para decimais): ");
             double preco = Double.parseDouble(scanner.nextLine());
 
             // Chama Service (que valida!)
             Livro livro = service.criarLivro(titulo, autor, editora, anoPublicacao,
                     quantidadeTotal, quantidadeDisponivel, genero, preco);
 
-            System.out.println("✔ Livro cadastrado com sucesso! ID: " + livro.getId());
+            if (livro == null) {
+                System.out.println("❌ Algo deu errado ao cadastrar o livro. Verifique as regras de validação.");
+            } else {
+                System.out.println("✔ Livro cadastrado com sucesso! ID: " + livro.getId());
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Erro de formato: Ano, quantidades e preço precisam ser valores numéricos válidos.");
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao cadastrar livro: " + e.getMessage());
+        }
     }
 
     // Editar livro
     public void editarLivro() {
-        consultarLivros();
-        System.out.print("\nID do livro a editar: ");
+        try {
+            consultarLivros();
+            System.out.print("\nID do livro a editar: ");
+            int id = Integer.parseInt(scanner.nextLine());
 
-        int id = Integer.parseInt(scanner.nextLine());
+            // Busca o livro (valida)
+            Livro livro = service.buscarPorId(id);
 
-        // Busca o livro (valida)
-        Livro livro = service.buscarPorId(id);
+            if (livro == null) {
+                System.out.println("❌ ID inválido! Livro não encontrado.");
+                return;
+            }
 
-        if (livro == null) {
-            System.out.println("ID inválido!");
-        } else {
             System.out.println("\n--- EDITAR LIVRO ---");
             System.out.println("1. Título (" + livro.getTitulo() + ")");
             System.out.println("2. Autor (" + livro.getAutor() + ")");
@@ -224,20 +254,30 @@ public class LivroController {
                 default:
                     System.out.println("❌ Opção inválida!");
             }
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Erro: O valor digitado precisa corresponder ao formato numérico esperado para o campo.");
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao editar livro: " + e.getMessage());
         }
     }
 
     // Deletar livro
     public void deletarLivro() {
-        consultarLivros();
-        System.out.print("\nID do livro a deletar: ");
+        try {
+            consultarLivros();
+            System.out.print("\nID do livro a deletar: ");
             int id = Integer.parseInt(scanner.nextLine());
             boolean livroDeletado = service.deletarLivro(id);
 
-            if (livroDeletado == false) {
-                System.out.println("Livro não existe!");
+            if (!livroDeletado) {
+                System.out.println("❌ Livro não existe!");
             } else {
                 System.out.println("✔ Livro deletado com sucesso!");
             }
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Erro: O ID do livro precisa ser um número inteiro válido.");
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao deletar livro: " + e.getMessage());
+        }
     }
 }

@@ -10,7 +10,7 @@ public class Main {
 
         printHeader("INICIANDO BIBLIOTECH SYSTEM...");
 
-
+        try {
             // ============================================
             // CRIAR TODOS OS REPOSITORIES
             // ============================================
@@ -73,10 +73,18 @@ public class Main {
             //  INICIAR APLICAÇÃO
             // ============================================
             printSuccess("Sistema pronto!\n");
+            printCredentials();
 
             menuPrincipal.exibir();
 
-            scanner.close();;
+        } catch (Exception e) {
+            System.out.println("\n❌ Ocorreu um erro crítico que impediu a execução do sistema: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
     }
 
     private static void printHeader(String message) {
@@ -98,9 +106,11 @@ public class Main {
 
     private static void printCredentials() {
         String credentials = """
+                ----------------------------------------
                 Credenciais Admin (para teste):
-                  📧 Email: italo@email.com
+                  📧 Email: italo@gmail.com
                   🔐 Senha: 123456
+                ----------------------------------------
                 """;
         System.out.println(credentials);
     }

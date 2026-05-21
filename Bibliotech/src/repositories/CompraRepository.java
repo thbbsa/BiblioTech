@@ -56,8 +56,14 @@ public class CompraRepository {
     public List<Compra> buscarPorStatus(String status) {
         List<Compra> resultado = new ArrayList<>();
 
+        if (status == null) {
+            return resultado;
+        }
+
         for (Compra c : compras) {
-            resultado.add(c);
+            if (c.getStatus().equalsIgnoreCase(status)) {
+                resultado.add(c);
+            }
         }
 
         return resultado;

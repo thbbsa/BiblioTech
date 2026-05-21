@@ -12,114 +12,93 @@ public class LivroService {
         this.repository = repository;
     }
 
-    // CRIAR com validações
     public Livro criarLivro(String titulo, String autor, String editora, int anoPublicacao,
-                            int quantidadeTotal, int quantidadeDisponivel, String genero, double preco)
-            throws IllegalArgumentException {
+                            int quantidadeTotal, int quantidadeDisponivel, String genero, double preco) {
 
-        // Validação 1: Título vazio?
         if (titulo == null || titulo.trim().isEmpty()) {
-            System.out.println("Título não pode estar vazio!");
+            throw new IllegalArgumentException("O título do livro não pode estar vazio.");
         }
 
-        // Validação 2: Autor vazio?
         if (autor == null || autor.trim().isEmpty()) {
-            System.out.println("Autor não pode estar vazio!");
+            throw new IllegalArgumentException("O autor do livro não pode estar vazio.");
         }
 
-        // Validação 3: Editora vazia?
         if (editora == null || editora.trim().isEmpty()) {
-            System.out.println("Editora não pode estar vazia!");
+            throw new IllegalArgumentException("A editora do livro não pode estar vazia.");
         }
 
-        // Validação 4: Ano válido?
         if (anoPublicacao <= 0) {
-            System.out.println("Ano de publicação deve ser positivo!");
+            throw new IllegalArgumentException("O ano de publicação deve ser um número positivo.");
         }
 
-        // Validação 5: Preço válido?
         if (preco <= 0) {
-            System.out.println("Preço deve ser maior que zero!");
+            throw new IllegalArgumentException("O preço do livro deve ser maior que zero.");
         }
 
-        // Validação 6: Quantidade válida?
         if (quantidadeTotal <= 0) {
-            System.out.println("Quantidade total deve ser positiva!");
+            throw new IllegalArgumentException("A quantidade total de livros deve ser positiva.");
         }
 
-        // Validação 7: Quantidade disponível não pode ser maior que total
         if (quantidadeDisponivel > quantidadeTotal) {
-            System.out.println(
-                    "Quantidade disponível não pode ser maior que total!");
+            throw new IllegalArgumentException("A quantidade disponível não pode ser maior que a quantidade total.");
         }
 
-        // Validação 8: Gênero vazio?
         if (genero == null || genero.trim().isEmpty()) {
-            System.out.println("Gênero não pode estar vazio!");
+            throw new IllegalArgumentException("O gênero do livro não pode estar vazio.");
         }
 
-        // Se passou em TUDO → salva
         return repository.salvar(titulo, autor, editora, anoPublicacao,
                 quantidadeTotal, quantidadeDisponivel, genero, preco);
     }
 
-    // BUSCAR por ID com validação
     public Livro buscarPorId(int id) {
         if (id <= 0) {
-            System.out.println("ID deve ser positivo!");
+            throw new IllegalArgumentException("O ID consultado deve ser um número positivo.");
         }
 
         Livro livro = repository.buscarPorId(id);
         if (livro == null) {
-            System.out.println("Livro não encontrado!");
+            throw new IllegalArgumentException("Nenhum livro foi encontrado com o ID " + id);
         }
 
         return livro;
     }
 
-    // BUSCAR por Título
     public List<Livro> buscarPorTitulo(String titulo) {
         if (titulo == null || titulo.trim().isEmpty()) {
-            System.out.println("Título não pode estar vazio!");
+            throw new IllegalArgumentException("O título para busca não pode estar vazio.");
         }
         return repository.buscarPorTitulo(titulo);
     }
 
-    // BUSCAR por Autor
     public List<Livro> buscarPorAutor(String autor) {
         if (autor == null || autor.trim().isEmpty()) {
-            System.out.println("Autor não pode estar vazio!");
+            throw new IllegalArgumentException("O autor para busca não pode estar vazio.");
         }
         return repository.buscarPorAutor(autor);
     }
 
-    // BUSCAR por Gênero
     public List<Livro> buscarPorGenero(String genero) {
         if (genero == null || genero.trim().isEmpty()) {
-            System.out.println("Gênero não pode estar vazio!");
+            throw new IllegalArgumentException("O gênero para busca não pode estar vazio.");
         }
         return repository.buscarPorGenero(genero);
     }
 
-    // LISTAR todos
     public List<Livro> listarTodos() {
         return repository.buscarTodos();
     }
 
-    // LISTAR apenas disponíveis
     public List<Livro> listarDisponíveis() {
         return repository.buscarDisponíveis();
     }
 
-    // ATUALIZAR com validação
     public void atualizarLivro(int id, String titulo, String autor, String editora,
                                int anoPublicacao, int quantidadeTotal, int quantidadeDisponivel,
                                String genero, double preco) {
 
-        // Busca e valida se existe
         Livro livro = buscarPorId(id);
 
-        // Validações (mesmas de criar)
         if (titulo != null && !titulo.trim().isEmpty()) {
             livro.setTitulo(titulo);
         }
@@ -138,7 +117,10 @@ public class LivroService {
         if (quantidadeTotal > 0) {
             livro.setQuantidadeTotal(quantidadeTotal);
         }
-        if (quantidadeDisponivel >= 0 && quantidadeDisponivel <= quantidadeTotal) {
+        if (quantidadeDisponivel >= 0) {
+            if (quantidadeDisponivel > livro.getQuantidadeTotal()) {
+                throw new IllegalArgumentException("A quantidade disponível não pode ser maior que a quantidade total.");
+            }
             livro.setQuantidadeDisponivel(quantidadeDisponivel);
         }
         if (genero != null && !genero.trim().isEmpty()) {
@@ -148,17 +130,15 @@ public class LivroService {
         repository.atualizar(livro);
     }
 
-    // REDUZIR estoque com validação
     public void reduzirEstoque(int idLivro, int quantidade) {
         Livro livro = buscarPorId(idLivro);
 
         if (quantidade <= 0) {
-            System.out.println("Quantidade deve ser positiva!");
+            throw new IllegalArgumentException("A quantidade para redução deve ser positiva.");
         }
 
         if (livro.getQuantidadeDisponivel() < quantidade) {
-            System.out.println("Estoque insuficiente! Disponível: "
-                    + livro.getQuantidadeDisponivel());
+            throw new IllegalStateException("Estoque insuficiente! Disponível: " + livro.getQuantidadeDisponivel());
         }
 
         for (int i = 0; i < quantidade; i++) {
@@ -168,16 +148,15 @@ public class LivroService {
         repository.atualizar(livro);
     }
 
-    // AUMENTAR estoque com validação
     public void aumentarEstoque(int idLivro, int quantidade) {
         Livro livro = buscarPorId(idLivro);
 
         if (quantidade <= 0) {
-            System.out.println("Quantidade deve ser positiva!");
+            throw new IllegalArgumentException("A quantidade para aumento deve ser positiva.");
         }
 
         if (livro.getQuantidadeDisponivel() + quantidade > livro.getQuantidadeTotal()) {
-            System.out.println("Quantidade não pode ultrapassar o total!");
+            throw new IllegalStateException("A quantidade disponível não pode ultrapassar a quantidade total informada.");
         }
 
         for (int i = 0; i < quantidade; i++) {
@@ -187,9 +166,8 @@ public class LivroService {
         repository.atualizar(livro);
     }
 
-    // DELETAR com validação
     public boolean deletarLivro(int id) {
-        buscarPorId(id); // Valida se existe
+        buscarPorId(id);
         return repository.deletar(id);
     }
 }

@@ -16,41 +16,37 @@ public class FuncionarioService {
 
     public Funcionario criarFuncionario(String nome, String email, String senha) {
         if (nome == null || nome.trim().isEmpty()) {
-            System.out.println("Nome não pode estar vazio!");
+            throw new IllegalArgumentException("O nome do funcionário não pode estar vazio.");
         }
 
-        if (!email.contains("@") || !email.contains(".")) {
-            System.out.println("Email inválido!");
+        if (email == null || !email.contains("@") || !email.contains(".")) {
+            throw new IllegalArgumentException("O formato do e-mail informado é inválido.");
         }
 
         if (senha == null || senha.length() < 6) {
-            System.out.println("Senha deve ter 6+ caracteres!");
+            throw new IllegalArgumentException("A senha deve conter pelo menos 6 caracteres.");
         }
 
         if (repository.buscarPorEmail(email) != null) {
-            System.out.println("Email já cadastrado!");
+            throw new IllegalStateException("Este e-mail já está cadastrado para outro funcionário.");
         }
 
         return repository.salvar(nome, email, senha);
     }
 
     public Funcionario fazerLogin(String email, String senha) {
-        if (email == null || email.isEmpty()) {
-            System.out.println("Email não pode estar vazio!");
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("O e-mail de login é obrigatório.");
         }
 
-        if (senha == null || senha.isEmpty()) {
-            System.out.println("Senha não pode estar vazia!");
+        if (senha == null || senha.trim().isEmpty()) {
+            throw new IllegalArgumentException("A senha de login é obrigatória.");
         }
 
         Funcionario funcionario = repository.buscarPorEmail(email);
 
-        if (funcionario == null) {
-            System.out.println("Email não cadastrado!");
-        }
-
-        if (!funcionario.getSenha().equals(senha)) {
-            System.out.println("Senha incorreta!");
+        if (funcionario == null || !funcionario.getSenha().equals(senha)) {
+            throw new IllegalArgumentException("Credenciais inválidas. E-mail ou senha incorretos.");
         }
 
         return funcionario;
@@ -58,27 +54,27 @@ public class FuncionarioService {
 
     public Funcionario buscarPorId(int id) {
         if (id <= 0) {
-            System.out.println("ID deve ser positivo!");
+            throw new IllegalArgumentException("O ID consultado deve ser um número positivo.");
         }
 
         Funcionario func = repository.buscarPorId(id);
 
         if (func == null) {
-            System.out.println("Funcionário não encontrado!");
+            throw new IllegalArgumentException("Nenhum funcionário foi encontrado com o ID " + id);
         }
 
         return func;
     }
 
     public Funcionario buscarPorEmail(String email) {
-        if (email == null || email.isEmpty()) {
-            System.out.println("Email inválido!");
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("O e-mail para busca não pode estar vazio.");
         }
 
         Funcionario func = repository.buscarPorEmail(email);
 
         if (func == null) {
-            System.out.println("Funcionário não encontrado!");
+            throw new IllegalArgumentException("Nenhum funcionário cadastrado com o e-mail informado.");
         }
 
         return func;
@@ -89,6 +85,7 @@ public class FuncionarioService {
     }
 
     public boolean deletarFuncionario(int id) {
+        buscarPorId(id);
         return repository.deletar(id);
     }
 }

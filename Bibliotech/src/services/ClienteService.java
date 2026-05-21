@@ -1,9 +1,7 @@
 package services;
 
-
 import models.Cliente;
 import repositories.ClienteRepository;
-
 import java.util.List;
 
 public class ClienteService {
@@ -14,45 +12,43 @@ public class ClienteService {
     }
 
     public Cliente criarCliente(String nome, String email, String senha) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("O nome do cliente não pode estar vazio.");
+        }
+        if (email == null || !email.contains("@") || !email.contains(".")) {
+            throw new IllegalArgumentException("O formato do e-mail informado é inválido.");
+        }
+        if (repository.buscarPorEmail(email) != null) {
+            throw new IllegalStateException("Este e-mail já está cadastrado no sistema.");
+        }
+        if (senha == null || Math.min(senha.length(), 6) < 6) {
+            throw new IllegalArgumentException("A senha deve conter pelo menos 6 caracteres.");
+        }
 
-            if (nome == null || nome.trim().isEmpty()) {
-                System.out.println("Nome não pode estar vazio!");
-            } else if (email == null || !email.contains("@") || !email.contains(".")) {
-                System.out.println("Email Inválido");
-            } else if (repository.buscarPorEmail(email) != null) {
-                System.out.println("Email já Cadastrado!");
-            } else if (senha == null || senha.length() <= 6) {
-                System.out.println("Senha deve ter pelo menos 6 caracteres!\"");
-            } else {
-                return repository.salvar(nome, email, senha);
-            }
-
-            return null;
+        return repository.salvar(nome, email, senha);
     }
 
     public Cliente buscarPorId(int id) {
         if (id <= 0) {
-            System.out.println("ID deve ser positivo!");
+            throw new IllegalArgumentException("O ID consultado deve ser um número positivo.");
         }
 
         Cliente cliente = repository.buscarPorId(id);
-
         if (cliente == null) {
-            System.out.println("Cliente não encontrado!");
+            throw new IllegalArgumentException("Nenhum cliente foi encontrado com o ID " + id);
         }
 
         return cliente;
     }
 
     public Cliente buscarPorEmail(String email) {
-        if (email == null || email.isEmpty()) {
-            System.out.println("Email inválido!");
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("O e-mail para busca não pode estar vazio.");
         }
 
         Cliente cliente = repository.buscarPorEmail(email);
-
         if (cliente == null) {
-            System.out.println("Cliente não encontrado!");
+            throw new IllegalArgumentException("Nenhum cliente cadastrado com o e-mail informado.");
         }
 
         return cliente;
@@ -60,7 +56,7 @@ public class ClienteService {
 
     public List<Cliente> buscarPorNome(String nome) {
         if (nome == null || nome.trim().isEmpty()) {
-            System.out.println("Nome não pode estar vazio!");
+            throw new IllegalArgumentException("O nome para busca não pode estar vazio.");
         }
 
         return repository.buscarPorNome(nome);
@@ -71,33 +67,23 @@ public class ClienteService {
     }
 
     public Cliente fazerLogin(String email, String senha) {
-        if (email == null || email.isEmpty()) {
-            System.out.println("Email não pode estar vazio!");
-            return null;
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("O e-mail de login é obrigatório.");
         }
-
-        if (senha == null || senha.isEmpty()) {
-            System.out.println("Senha não pode estar vazia!");
-            return null;
+        if (senha == null || senha.trim().isEmpty()) {
+            throw new IllegalArgumentException("A senha de login é obrigatória.");
         }
 
         Cliente cliente = repository.buscarPorEmail(email);
-
-        if (cliente == null) {
-            System.out.println("Email não cadastrado!");
-            return null;
-        }
-
-        if (!cliente.getSenha().equals(senha)) {
-            System.out.println("Senha incorreta!");
-            return null;
+        if (cliente == null || !cliente.getSenha().equals(senha)) {
+            throw new IllegalArgumentException("Credenciais inválidas. E-mail ou senha incorretos.");
         }
 
         return cliente;
     }
 
     public boolean deletarCliente(int id) {
-        buscarPorId(id); // Valida se existe
+        buscarPorId(id);
         return repository.deletar(id);
     }
 }

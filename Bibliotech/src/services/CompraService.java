@@ -22,29 +22,28 @@ public class CompraService {
 
     public Compra criarCompra(int idCliente, int idLivro, int quantidade) {
         Cliente cliente = clienteService.buscarPorId(idCliente);
-
-        Livro livro = livroService.buscarPorId(idLivro);
+        Livro libro = livroService.buscarPorId(idLivro);
 
         if (quantidade <= 0) {
-            System.out.println("Estoque insuficiente! Disponível: " + livro.getQuantidadeDisponivel());
+            throw new IllegalArgumentException("A quantidade comprada deve ser maior que zero.");
+        }
+
+        if (libro.getQuantidadeDisponivel() < quantidade) {
+            throw new IllegalStateException("Estoque insuficiente! Disponível: " + libro.getQuantidadeDisponivel());
         }
 
         String dataCompra = LocalDate.now().toString();
-        Compra compra = repository.salvar(idCliente, idLivro, quantidade,
-                livro.getPreco(), dataCompra, "pendente");
-
-        return compra;
+        return repository.salvar(idCliente, idLivro, quantidade, libro.getPreco(), dataCompra, "pendente");
     }
 
     public Compra buscarPorId(int id) {
         if (id <= 0) {
-            System.out.println("ID deve ser positivo!");
+            throw new IllegalArgumentException("O ID consultado deve ser um número positivo.");
         }
 
         Compra compra = repository.buscarPorId(id);
-
         if (compra == null) {
-            System.out.println("Compra não encontrada!");
+            throw new IllegalArgumentException("Nenhuma compra foi encontrada com o ID " + id);
         }
 
         return compra;
@@ -80,41 +79,35 @@ public class CompraService {
         Compra compra = buscarPorId(idCompra);
 
         if (!compra.getStatus().equals("pendente")) {
-            System.out.println("Apenas compras pendentes podem ser confirmadas!");
+            throw new IllegalStateException("Apenas compras pendentes podem ser confirmadas.");
         }
 
         livroService.reduzirEstoque(compra.getIdLivro(), compra.getQuantidade());
-
-        // Muda status para concluída
         repository.atualizarStatus(idCompra, "concluída");
     }
 
-    public void cancelarCompra(int idCompra) throws IllegalArgumentException {
+    public void cancelarCompra(int idCompra) {
         Compra compra = buscarPorId(idCompra);
 
         if (!compra.getStatus().equals("pendente")) {
-            System.out.println("Apenas compras pendentes podem ser canceladas!");
+            throw new IllegalStateException("Apenas compras pendentes podem ser canceladas.");
         }
 
-        // Muda status para cancelada
         repository.atualizarStatus(idCompra, "cancelada");
     }
 
-    public void reembolsoCompra(int idCompra) throws IllegalArgumentException {
+    public void reembolsoCompra(int idCompra) {
         Compra compra = buscarPorId(idCompra);
 
         if (!compra.getStatus().equals("concluída")) {
-            System.out.println("Apenas compras concluídas podem ser reembolsadas!");
+            throw new IllegalStateException("Apenas compras concluídas podem ser reembolsadas.");
         }
 
-        // Aumenta estoque do livro
         livroService.aumentarEstoque(compra.getIdLivro(), compra.getQuantidade());
-
-        // Muda status para cancelada
         repository.atualizarStatus(idCompra, "cancelada");
     }
 
-    public double calcularTotalGastoCliente(int idCliente) throws IllegalArgumentException {
+    public double calcularTotalGastoCliente(int idCliente) {
         clienteService.buscarPorId(idCliente);
 
         List<Compra> comprasCliente = repository.buscarPorCliente(idCliente);
@@ -140,14 +133,13 @@ public class CompraService {
         return total;
     }
 
-    public boolean deletarCompra(int id) throws IllegalArgumentException {
+    public boolean deletarCompra(int id) {
         buscarPorId(id);
 
         boolean deletou = repository.deletar(id);
         if (!deletou) {
-            System.out.println("Apenas compras canceladas podem ser deletadas!");
+            throw new IllegalStateException("Apenas compras canceladas podem ser deletadas do sistema.");
         }
         return true;
     }
-
 }

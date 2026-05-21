@@ -34,119 +34,126 @@ public class MenuCliente {
         boolean rodando = true;
 
         while (rodando) {
-            System.out.println("\n╔════════════════════════════════════╗");
-            System.out.println("║     MENU CLIENTE - " + clienteLogado.getNome() + "     ║");
-            System.out.println("╚════════════════════════════════════╝");
+            try {
+                System.out.println("\n╔════════════════════════════════════╗");
+                System.out.println("║     MENU CLIENTE - " + clienteLogado.getNome() + "     ║");
+                System.out.println("╚════════════════════════════════════╝");
 
-            System.out.println("\n📚 -- LIVROS --");
-            System.out.println("1. Consultar Livros");
-            System.out.println("2. Livros Disponíveis");
-            System.out.println("3. Buscar Livro");
+                System.out.println("\n📚 -- LIVROS --");
+                System.out.println("1. Consultar Livros");
+                System.out.println("2. Livros Disponíveis");
+                System.out.println("3. Buscar Livro");
 
-            System.out.println("\n📖 -- EMPRÉSTIMOS --");
-            System.out.println("4. Realizar Empréstimo");
-            System.out.println("5. Meus Empréstimos");
-            System.out.println("6. Devolver Livro");
+                System.out.println("\n📖 -- EMPRÉSTIMOS --");
+                System.out.println("4. Realizar Empréstimo");
+                System.out.println("5. Meus Empréstimos");
+                System.out.println("6. Devolver Livro");
 
-            System.out.println("\n🛍️  -- COMPRAS --");
-            System.out.println("7. Comprar Livro");
-            System.out.println("8. Minhas Compras");
+                System.out.println("\n🛍️  -- COMPRAS --");
+                System.out.println("7. Comprar Livro");
+                System.out.println("8. Minhas Compras");
 
-            System.out.println("\n👤 -- PERFIL --");
-            System.out.println("9. Ver Perfil");
+                System.out.println("\n👤 -- PERFIL --");
+                System.out.println("9. Ver Perfil");
 
-            System.out.println("\n0. Sair");
-            System.out.print("\nEscolha: ");
+                System.out.println("\n0. Sair");
+                System.out.print("\nEscolha: ");
 
-            String opcao = scanner.nextLine();
+                String opcao = scanner.nextLine();
 
-            switch (opcao) {
-                // ========== LIVROS ==========
-                case "1":
-                    livroController.consultarLivros();
-                    pausa();
-                    break;
+                switch (opcao) {
+                    // ========== LIVROS ==========
+                    case "1":
+                        livroController.consultarLivros();
+                        pausa();
+                        break;
 
-                case "2":
-                    livroController.consultarLivrosDisponíveis();
-                    pausa();
-                    break;
+                    case "2":
+                        livroController.consultarLivrosDisponíveis();
+                        pausa();
+                        break;
 
-                case "3":
-                    menuBuscarLivro();
-                    pausa();
-                    break;
+                    case "3":
+                        menuBuscarLivro();
+                        pausa();
+                        break;
 
-                // ========== EMPRÉSTIMOS ==========
-                case "4":
-                    emprestimoController.realizarEmprestimo(clienteLogado.getId());
-                    pausa();
-                    break;
+                    // ========== EMPRÉSTIMOS ==========
+                    case "4":
+                        emprestimoController.realizarEmprestimo(clienteLogado.getId());
+                        pausa();
+                        break;
 
-                case "5":
-                    emprestimoController.listarEmprestimosPorCliente(clienteLogado.getId());
-                    pausa();
-                    break;
+                    case "5":
+                        emprestimoController.listarEmprestimosPorCliente(clienteLogado.getId());
+                        pausa();
+                        break;
 
-                case "6":
-                    emprestimoController.devolverEmprestimo();
-                    pausa();
-                    break;
+                    case "6":
+                        emprestimoController.devolverEmprestimo();
+                        pausa();
+                        break;
 
-                // ========== COMPRAS ==========
-                case "7":
-                    compraController.criarCompraCliente(clienteLogado);
-                    pausa();
-                    break;
+                    // ========== COMPRAS ==========
+                    case "7":
+                        compraController.criarCompraCliente(clienteLogado, livroController);
+                        pausa();
+                        break;
 
-                case "8":
-                    compraController.verMinhasComprasCliente(clienteLogado);
-                    pausa();
-                    break;
+                    case "8":
+                        compraController.verMinhasComprasCliente(clienteLogado);
+                        pausa();
+                        break;
 
-                // ========== PERFIL ==========
-                case "9":
-                    clienteController.visualizarPerfil(clienteLogado);
-                    pausa();
-                    break;
+                    // ========== PERFIL ==========
+                    case "9":
+                        clienteController.visualizarPerfil(clienteLogado);
+                        pausa();
+                        break;
 
-                case "0":
-                    rodando = false;
-                    System.out.println("✔ Saindo... Até logo!");
-                    break;
+                    case "0":
+                        rodando = false;
+                        System.out.println("✔ Saindo... Até logo!");
+                        break;
 
-                default:
-                    System.out.println("❌ Opção inválida!");
+                    default:
+                        System.out.println("❌ Opção inválida!");
+                }
+            } catch (Exception e) {
+                System.out.println("\n❌ Ocorreu um erro inesperado no menu do cliente: " + e.getMessage());
+                pausa();
             }
         }
     }
 
-    // Menu para buscar livros
     private void menuBuscarLivro() {
-        System.out.println("\n--- BUSCAR LIVRO ---");
-        System.out.println("1. Por Título");
-        System.out.println("2. Por Autor");
-        System.out.println("3. Por Gênero");
-        System.out.print("Escolha: ");
+        try {
+            System.out.println("\n--- BUSCAR LIVRO ---");
+            System.out.println("1. Por Título");
+            System.out.println("2. Por Autor");
+            System.out.println("3. Por Gênero");
+            System.out.print("Escolha: ");
 
-        String opcao = scanner.nextLine();
+            String opcao = scanner.nextLine();
 
-        switch (opcao) {
-            case "1":
-                livroController.buscarPorTitulo();
-                break;
-            case "2":
-                livroController.buscarPorAutor();
-                break;
-            case "3":
-                livroController.buscarPorGenero();
-                break;
-            default:
-                System.out.println("❌ Opção inválida!");
+            switch (opcao) {
+                case "1":
+                    livroController.buscarPorTitulo();
+                    break;
+                case "2":
+                    livroController.buscarPorAutor();
+                    break;
+                case "3":
+                    livroController.buscarPorGenero();
+                    break;
+                default:
+                    System.out.println("❌ Opção inválida!");
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao acessar o menu de busca: " + e.getMessage());
         }
     }
 
-    // Pausa para o usuário ler
     private void pausa() {
         System.out.print("\n[Pressione ENTER para continuar...]");
         scanner.nextLine();
