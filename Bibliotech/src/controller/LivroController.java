@@ -3,6 +3,7 @@ package controller;
 import models.Livro;
 import services.LivroService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -145,14 +146,20 @@ public class LivroController {
             System.out.print("Preço (use ponto para decimais): ");
             double preco = Double.parseDouble(scanner.nextLine());
 
-            // Chama Service (que valida!)
-            Livro livro = service.criarLivro(titulo, autor, editora, anoPublicacao,
-                    quantidadeTotal, quantidadeDisponivel, genero, preco);
+            int anoAtual = LocalDate.now().getYear();
 
-            if (livro == null) {
-                System.out.println("❌ Algo deu errado ao cadastrar o livro. Verifique as regras de validação.");
+            if (anoPublicacao > anoAtual) {
+                System.out.println("❌ Algo deu errado ao cadastrar o livro. O ano de publicação não pode ser maior que o ano atual.");
             } else {
-                System.out.println("✔ Livro cadastrado com sucesso! ID: " + livro.getId());
+                // Chama Service (que valida!)
+                Livro livro = service.criarLivro(titulo, autor, editora, anoPublicacao,
+                        quantidadeTotal, quantidadeDisponivel, genero, preco);
+
+                if (livro == null) {
+                    System.out.println("❌ Algo deu errado ao cadastrar o livro. Verifique as regras de validação.");
+                } else {
+                    System.out.println("✔ Livro cadastrado com sucesso! ID: " + livro.getId());
+                }
             }
         } catch (NumberFormatException e) {
             System.out.println("❌ Erro de formato: Ano, quantidades e preço precisam ser valores numéricos válidos.");
